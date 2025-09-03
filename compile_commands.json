@@ -256,5 +256,17 @@
         "directory": "/Users/musa/afm_hmi",
         "file": "src/main.cpp",
         "output": ".pio/build/leonardo/src/main.cpp.o"
+    },
+    {
+        "command": "/Users/musa/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/leonardo/src/page.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega32u4 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60118 -DARDUINO_AVR_LEONARDO -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DUSB_VID=0x2341 -DUSB_PID=0x8036 \"-DUSB_PRODUCT=\\\"Arduino Leonardo\\\"\" -DUSB_MANUFACTURER=\\\"Arduino\\\" -Iinclude -Isrc -I.pio/libdeps/leonardo/Softwire/src -I.pio/libdeps/leonardo/AsyncDelay/src -I.pio/libdeps/leonardo/AccelStepper/src \"-I.pio/libdeps/leonardo/Adafruit SSD1306\" \"-I.pio/libdeps/leonardo/Adafruit GFX Library\" \"-I.pio/libdeps/leonardo/Adafruit BusIO\" -I/Users/musa/.platformio/packages/framework-arduino-avr/libraries/SPI/src -I/Users/musa/.platformio/packages/framework-arduino-avr/libraries/Wire/src -I.pio/libdeps/leonardo/Keypad/src -I/Users/musa/.platformio/packages/framework-arduino-avr/cores/arduino -I/Users/musa/.platformio/packages/framework-arduino-avr/variants/leonardo src/page.cpp",
+        "directory": "/Users/musa/afm_hmi",
+        "file": "src/page.cpp",
+        "output": ".pio/build/leonardo/src/page.cpp.o"
+    },
+    {
+        "command": "/Users/musa/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/leonardo/src/setup.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega32u4 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60118 -DARDUINO_AVR_LEONARDO -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DUSB_VID=0x2341 -DUSB_PID=0x8036 \"-DUSB_PRODUCT=\\\"Arduino Leonardo\\\"\" -DUSB_MANUFACTURER=\\\"Arduino\\\" -Iinclude -Isrc -I.pio/libdeps/leonardo/Softwire/src -I.pio/libdeps/leonardo/AsyncDelay/src -I.pio/libdeps/leonardo/AccelStepper/src \"-I.pio/libdeps/leonardo/Adafruit SSD1306\" \"-I.pio/libdeps/leonardo/Adafruit GFX Library\" \"-I.pio/libdeps/leonardo/Adafruit BusIO\" -I/Users/musa/.platformio/packages/framework-arduino-avr/libraries/SPI/src -I/Users/musa/.platformio/packages/framework-arduino-avr/libraries/Wire/src -I.pio/libdeps/leonardo/Keypad/src -I/Users/musa/.platformio/packages/framework-arduino-avr/cores/arduino -I/Users/musa/.platformio/packages/framework-arduino-avr/variants/leonardo src/setup.cpp",
+        "directory": "/Users/musa/afm_hmi",
+        "file": "src/setup.cpp",
+        "output": ".pio/build/leonardo/src/setup.cpp.o"
     }
 ]
