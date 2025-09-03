@@ -1,0 +1,179 @@
+#include "Arduino.h"
+#include "Wire.h"
+#include "Adafruit_SSD1306.h"
+#include "Keypad.h"
+
+#define SCREEN_WIDTH 128  // OLED display width, in pixels
+#define SCREEN_HEIGHT 32  // OLED display height, in pixels
+
+// Declaration for SSD1306 display 
+#define OLED_RESET -1  // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+// Declaration for Joystick
+#define SW_PIN 0
+#define X_PIN A0
+#define Y_PIN A1
+
+// Declaration for Keypad
+const byte ROWS = 4;  //four rows
+const byte COLS = 4;  //four columns
+
+char keys[ROWS][COLS] = {
+  { '1', '2', '3', 'A' },
+  { '4', '5', '6', 'B' },
+  { '7', '8', '9', 'C' },
+  { '*', '0', '#', 'D' }
+};
+
+byte rowPins[ROWS] = { 11, 10, 9, 8 };  //connect to the row pinouts of the keypad
+byte colPins[COLS] = { 7, 6, 5, 4 };  //connect to the column pinouts of the keypad
+
+
+//Create an object of keypad
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+// For scroll
+volatile bool buttonPressed = false;
+
+
+/* Function Prototypes */
+void show_manual(void);
+void take_an_afm_image(void);
+void confirm_all_checks(void);
+void on_button_press(void);
+void displayTextWithScroll(const char *text);
+
+/**
+* setup - Configures I/O pins and Peripherals
+*
+*/
+void setup() {
+  Serial.begin(9600);
+
+  // initialize the OLED object
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;)
+      ;  // Don't proceed, loop forever
+  }
+
+  // initialize Joystick
+  // pinMode(SW_PIN, INPUT_PULLUP);
+  // attachInterrupt(digitalPinToInterrupt(SW_PIN), on_button_press, FALLING);
+
+  // Clear the buffer.
+  display.clearDisplay();
+
+  // Title
+  display.setTextSize(1);
+  display.setTextColor(BLACK, WHITE);
+  display.setCursor(0, 0);
+  display.println(F("HMI System"));
+
+  // Info
+  display.setTextColor(WHITE);
+  display.setCursor(0, 8);
+  display.println(F("1-Show Manual"));
+  display.println(F("2-Take an AFM Image"));
+
+  display.display();
+}
+
+/**
+* loop - Executes Program continuously
+*/
+void loop() {
+  char key = keypad.getKey();  // Read the key
+
+  if (key) 
+  {
+    switch (key)
+    {
+      case '1':
+        Serial.println("In Show Manual");
+        show_manual();
+        break;
+
+      case '2':
+        Serial.println("In Take an AFM image");
+        take_an_afm_image();
+        break;
+
+      default:
+        Serial.print("The default expression, key: ");
+        Serial.println(key);
+        break;
+    }
+  }
+}
+
+
+void show_manual(void)
+{
+  Serial.println("MUsaaa");
+}
+
+void take_an_afm_image(void)
+{
+  // Clear the Buffer
+  display.clearDisplay();
+
+  // Title
+  display.setTextSize(1);
+  display.setTextColor(BLACK, WHITE);
+  display.setCursor(0, 0);
+  display.println("Take an AFM Image");
+
+  // Info
+  display.setTextColor(WHITE);
+  display.setCursor(0, 8);
+  display.println("1-Confirm all Checks");
+  display.println("2-Navigate to scan area");
+  
+  display.display();
+}
+
+//void on_button_press(void) {
+//  buttonPressed = true;
+//}
+
+//void displayTextWithScroll(const char *text) {
+//  const int charsPerLine = 21;   // rough estimate for 128 px width, adjust if using different text size
+//  const int linesPerPage = 4;    // for 32px height (8px per line)
+//  const int charsPerPage = charsPerLine * linesPerPage;
+//
+//  int length = strlen(text);
+//  int pageStart = 0;
+//
+//  while (pageStart < length) {
+//    display.clearDisplay();
+//    display.setTextSize(1);
+//    display.setTextColor(SSD1306_WHITE);
+//    display.setCursor(0, 0);
+//
+//    // print page
+//    for (int line = 0; line < linesPerPage; line++) {
+//      int lineStart = pageStart + line * charsPerLine;
+//      if (lineStart >= length) break;
+//
+//      char buf[charsPerLine];
+//      strncpy(buf, text + lineStart, charsPerLine);
+//      //buf[charsPerLine] = '\0';
+//      display.println(buf);
+//      Serial.println(buf);
+//    }
+//
+//    display.display();
+//
+//    // Wait for button press
+//    buttonPressed = false;
+//    while (!buttonPressed) {
+//      // do nothing or handle other tasks
+//      // (can break if you want a timeout)
+//    }
+//
+//    pageStart += charsPerPage;
+//  }
+//}

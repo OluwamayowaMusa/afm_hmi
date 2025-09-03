@@ -1,0 +1,51 @@
+#include "Arduino.h"
+
+
+
+// Function Protoypes
+
+// Manual
+void show_device_manual(void);
+void cable_connections(void);
+void control_xy_and_z_stage(void);
+void remove_install_system_components(char *component);
+void loading_a_sample(void);
+void loading_a_probe(void);
+void use_an_optical_view(void);
+void align_deflection_sensor(void);
+
+// AFM Scan
+void take_an_afm_image(void);
+void confirm_all_checks(void);
+void navigate_to_scan_area(void);
+void configure_scan_parameters(void);
+void take_scan(void);
+void update_scan_parameters(void);
+
+void setup() {
+}
+
+void loop() {
+  show_device_manual();
+  take_an_afm_image();
+}
+
+
+void show_device_manual(void)
+{
+
+}
+
+void take_an_afm_image(void)
+{
+  confirm_all_checks();
+  navigate_to_scan_area();
+  configure_scan_parameters();
+  take_scan();
+  update_scan_parameters();
+}
+
+void confirm_all_checks(void)
+{
+
+}
