@@ -3,6 +3,7 @@
 
 /* Define Libraries */
 #include "Arduino.h"
+#include "WString.h"
 #include "Wire.h"
 #include "Adafruit_SSD1306.h"
 #include "Keypad.h"
@@ -34,7 +35,7 @@ void take_an_afm_image(void);
 bool confirm_all_checks(void);
 void displayMainMenu(void);
 void setupDisplay(void);
-bool performSingleCheck(const char *category, const char *question);
+bool performSingleCheck(const __FlashStringHelper *category, const __FlashStringHelper *question);
 
 void handlePagination(void);
 void displayCurrentPage(void);

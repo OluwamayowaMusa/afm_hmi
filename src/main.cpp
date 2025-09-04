@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "Key.h"
+#include "WString.h"
 #include "afm_hmi.h"
 
 
@@ -150,12 +151,12 @@ void take_an_afm_image(void)
 bool confirm_all_checks(void)
 {
   // Array of check items - category, question pairs
-  const char* checks[][2] = {
-    {"Cable Connections", "Cable well connected?"},
-    {"System Components", "Probe Head Installed?"},
-    {"System Components", "Scanner Installed?"},
-    {"System Components", "Probe Loaded?"},
-    {"System Components", "Sample Loaded?"}
+  const __FlashStringHelper* checks[][2] = {
+    {F("Cable Connections"), F("Cable well connected?")},
+    {F("System Components"), F("Probe Head Installed?")},
+    {F("System Components"), F("Scanner Installed?")},
+    {F("System Components"), F("Probe Loaded?")},
+    {F("System Components"), F("Sample Loaded?")}
   };
 
   int numChecks = sizeof(checks) / sizeof(checks[0]);
@@ -177,7 +178,7 @@ bool confirm_all_checks(void)
  * @question: The question to ask (e.g., "Cable well connected?")
  * Return: true if user pressed YES, false if user pressed NO
  */
-bool performSingleCheck(const char *category, const char *question)
+bool performSingleCheck(const __FlashStringHelper *category, const __FlashStringHelper *question)
 {
   // Display the question
   setupDisplay();
