@@ -11,3 +11,29 @@ void setupDisplay(void)
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(0, 0);
 }
+
+/**
+ * displayMainMenu - display main menu
+*/
+void displayMainMenu()
+{
+  setupDisplay();
+  display.println(F("HMI System Ready"));
+  display.println(F("1: Show Device Manual"));
+  display.println(F("2: Take an AFM Image"));
+  display.println(F("Select option:"));
+  display.display();
+}
+
+
+/**
+ * isdigit - check if a character is digit
+*/
+
+bool _isdigit(char c)
+{
+  if (c >= '0' && c <= '9')
+    return true;
+
+  return false;
+}

@@ -1,5 +1,4 @@
-#include "Arduino.h"
-#include "Key.h"
+#include "USBAPI.h"
 #include "WString.h"
 #include "afm_hmi.h"
 
@@ -37,7 +36,7 @@ bool buttonPressed = false;
 /**
  * setup - Configures I/O pins and Peripherals
  *
- */
+*/
 void setup() {
   Serial.begin(9600);
 
@@ -52,6 +51,12 @@ void setup() {
   pinMode(PAGE_BUTTON_PIN, INPUT_PULLUP);
   pinMode(YES_BUTTON_PIN, INPUT_PULLUP);
   pinMode(NO_BUTTON_PIN, INPUT_PULLUP);
+
+  // initialize Motor pins
+  pinMode(STEP_PIN_X, OUTPUT);
+  pinMode(DIR_PIN_X, OUTPUT);
+  pinMode(STEP_PIN_Y, OUTPUT);
+  pinMode(DIR_PIN_Y, OUTPUT);
 
   displayMainMenu();
 }
@@ -125,19 +130,21 @@ void take_an_afm_image(void)
     switch (key)
     {
       case '1':
-        Serial.println(F("Confirm all checks"));
-        if (confirm_all_checks()){
-          Serial.println(F("All Checks performed, naviagting"));
-        }
-        else
-        {
-          display.println(F("Ensure checks pass"));
-          display.display();
-        }
+          Serial.println(F("Confirm all checks"));
+          if (confirm_all_checks())
+          {
+            Serial.println(F("All Checks performed, naviagting"));
+            navigate_to_scan_area();
+          }
+          else 
+          {
+            display.println(F("Ensure checks pass"));
+            display.display();
+          }
       default:
-        Serial.println(F("Going back to Main Menu"));
-        displayMainMenu();
-        break;
+          Serial.println(F("Going back to Main Menu"));
+          displayMainMenu();
+          break;
     }
   }
 }
@@ -178,7 +185,9 @@ bool confirm_all_checks(void)
  * @question: The question to ask (e.g., "Cable well connected?")
  * Return: true if user pressed YES, false if user pressed NO
  */
-bool performSingleCheck(const __FlashStringHelper *category, const __FlashStringHelper *question)
+bool performSingleCheck(
+  const __FlashStringHelper *category,
+  const __FlashStringHelper *question)
 {
   // Display the question
   setupDisplay();
@@ -209,6 +218,106 @@ bool performSingleCheck(const __FlashStringHelper *category, const __FlashString
   return false;
 }
 
+/**
+ * navigate_to_scan_area - Navigate to area on sample to scan
+ */
+void navigate_to_scan_area(void)
+{
+  // Info
+  Serial.println(F("In Navigation"));
+  String text = F(
+    "Navigate  scan Area\n"
+    "-Use the keypad or joystick to navigate to interested area under sample.\n"
+    "-Press 1 for keypad, 2 for joystick.\n"
+  );
+  displayTextWithPagination(text);
+
+  
+  Serial.println(F("Waiting for keyboard input"));
+  char key = waitForKeypadInput();
+
+  if (key)
+  {
+    switch (key)
+    {
+      case '1':
+        keypadNavigation();
+        break;
+
+      case '2':
+        joystickNavigation();
+        break;
+    }
+  }
+}
+
+
+/**
+ * keypadNavigation - Navigate to scan area using the keypad.
+ */
+void keypadNavigation(void)
+{
+  // Enter X displacement
+  String x_text = F(
+    "Keypad Nav\n"
+    "-Enter X (mm): "
+  );
+  displayTextWithPagination(x_text);
+  display.setCursor(0, 16);
+
+  char x_value = waitForKeypadInput();
+  while (!isdigit(x_value)) {
+    Serial.println(F("Enter valid input"));
+    display.println(F("Enter valid input"));
+    display.display();
+    x_value = waitForKeypadInput();
+  }
+
+  Serial.println(x_value);
+  display.println(x_value);
+  display.display();
+  delay(2000);
+
+  // Enter Y displacement
+  String y_text = F(
+    "Keypad Nav\n"
+    "-Enter Y (mm): "
+  );
+  displayTextWithPagination(y_text);
+  display.setCursor(0, 16);
+
+  char y_value = waitForKeypadInput();
+  while (!isdigit(y_value)) {
+    Serial.println(F("Enter valid input"));
+    display.println(F("Enter valid input"));
+    display.display();
+    y_value = waitForKeypadInput();
+  }
+
+  Serial.println(y_value);
+  display.println(y_value);
+  display.display();
+  delay(2000);
+
+  short int x_dis = int(x_value) - 48;
+  short int y_dis = int(y_value) - 48;
+  
+  Serial.print(F("Move X by "));
+  Serial.println(x_dis);
+  motorMoveDistance(x_dis, 'X');
+
+  Serial.print(F("Move Y by "));
+  Serial.println(y_dis);
+  motorMoveDistance(y_dis, 'Y');
+}
+
+/**
+ * joystickNavigation - Navigate to scan area using the joystick
+ */
+
+void joystickNavigation(void)
+{
+}
 
 /**
 * waitForKeypadInput - Wait for keypad input and return the key
@@ -233,17 +342,4 @@ char waitForKeypadInput() {
   Serial.print(F("Key pressed: "));
   Serial.println(key);
   return key;
-}
-
-/**
- * displayMainMenu - display main menu
-*/
-void displayMainMenu()
-{
-  setupDisplay();
-  display.println(F("HMI System Ready"));
-  display.println(F("1: Show Device Manual"));
-  display.println(F("2: Take an AFM Image"));
-  display.println(F("Select option:"));
-  display.display();
 }

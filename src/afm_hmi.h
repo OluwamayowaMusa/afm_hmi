@@ -22,6 +22,14 @@ extern bool buttonPressed;
 #define PAGE_BUTTON_PIN 0
 #define YES_BUTTON_PIN 1
 #define NO_BUTTON_PIN 12
+
+#define STEP_PIN_X A2
+#define DIR_PIN_X A3
+#define STEP_PIN_Y A4
+#define DIR_PIN_Y A5
+#define STEPS_PER_DISTANCE 400 /*Microstep-16, distance-8mm*/
+#define STEP_DELAY 1000
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 32
 #define OLED_RESET -1
@@ -33,9 +41,16 @@ extern bool buttonPressed;
 void show_manual(void);
 void take_an_afm_image(void);
 bool confirm_all_checks(void);
+void navigate_to_scan_area(void);
+void keypadNavigation(void);
+void joystickNavigation(void);
+void motorMoveDistance(int distance, char motor);
 void displayMainMenu(void);
 void setupDisplay(void);
-bool performSingleCheck(const __FlashStringHelper *category, const __FlashStringHelper *question);
+bool _isdigit(char c);
+bool performSingleCheck(
+	const __FlashStringHelper *category,
+	const __FlashStringHelper *question);
 
 void handlePagination(void);
 void displayCurrentPage(void);
