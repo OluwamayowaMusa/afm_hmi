@@ -8,12 +8,12 @@
 ScanConfig setDefaultConfig(void)
 {
   ScanConfig scan_config = {
-    .head_type = "AFM-LFM",
+    .head_type = F("AFM-LFM"),
     .scanner = 10,
-    .head_mode = "AFM",
-    .beam_bounce_cantilever = "UL06B",
+    .head_mode = F("AFM"),
+    .beam_bounce_cantilever = F("UL06B"),
     .electrochemistry = false,
-    .voltage_mode = 'H',
+    .voltage_mode = F("HI"),
   };
 
   return scan_config;

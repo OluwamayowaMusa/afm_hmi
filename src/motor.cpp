@@ -8,7 +8,6 @@
  */
 void motorMoveDistance(int distance, char motor)
 {
-  Serial.println("Moving Motor");
   // Power motor
   digitalWrite(ENABLE_PIN, LOW);
   digitalWrite(SLEEP_PIN, HIGH);
@@ -24,7 +23,6 @@ void motorMoveDistance(int distance, char motor)
       pins = {STEP_PIN_Y, DIR_PIN_Y};
       break;
     default:
-      Serial.println(F("Invalid motor specified"));
       return;
   }
 

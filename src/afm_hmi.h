@@ -71,12 +71,12 @@ struct MotorPins
  */
 struct __attribute__((packed)) ScanConfig
 {
-	char head_type[8];
+	const __FlashStringHelper *head_type;
 	int scanner;
-	char head_mode[4];
-	char beam_bounce_cantilever[6];
+	const __FlashStringHelper *head_mode;
+	const __FlashStringHelper *beam_bounce_cantilever;
 	bool electrochemistry;
-	char voltage_mode;
+	const __FlashStringHelper *voltage_mode;
 	
 };
 

@@ -433,6 +433,8 @@ bool quickScan(void)
     "Config summary\n"
     "Head Mode: " + String(scan_config.head_mode) + "\n"
     "Scan size: " + String(scan_parameters.scan_size) + "µm\n"
+    "Scan rate:" + String(scan_parameters.scan_rate) + "Hz\n"
+    "Data Points: " + String(scan_parameters.no_data_points) + "\n"
     "Images: " + String(scan_parameters.no_of_images) + "\n"
     ;
   displayTextWithPagination(summary);
