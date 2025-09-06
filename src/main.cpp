@@ -77,26 +77,20 @@ void loop() {
     return; // Don't process keypad while in text display mode
   }
 
-
-  char key = keypad.getKey();  // Read the key
-
-  if (key)
+  switch (waitForKeypadInput())
   {
-    switch (key)
-    {
-      case '1':
-        Serial.println(F("A: Show Manual"));
-        show_manual();
-        break;
+    case '1':
+      Serial.println(F("A: Show Manual"));
+      show_manual();
+      break;
 
-      case '2':
-        Serial.println(F("A: Take an AFM image"));
-        take_an_afm_image();
-        break;
+    case '2':
+      Serial.println(F("A: Take an AFM image"));
+      take_an_afm_image();
+      break;
 
-      default:
-        break;
-    }
+    default:
+      break;
   }
 
   displayMainMenu();
@@ -133,7 +127,10 @@ void take_an_afm_image(void)
     case '1':
       if (confirm_all_checks())
       {
-        if (navigate_to_scan_area()) {};
+        if (navigate_to_scan_area())
+        {
+          configure_scan_parameters();
+        };
       }
       else
       {
@@ -158,10 +155,10 @@ bool confirm_all_checks(void)
   // Array of check items - category, question pairs
   const __FlashStringHelper* checks[][2] = {
     {F("Cable Connections"), F("Cable well connected?")},
-    {F("System Components"), F("Probe Head Installed?")},
-    {F("System Components"), F("Scanner Installed?")},
-    {F("System Components"), F("Probe Loaded?")},
-    {F("System Components"), F("Sample Loaded?")}
+//    {F("System Components"), F("Probe Head Installed?")},
+//    {F("System Components"), F("Scanner Installed?")},
+//    {F("System Components"), F("Probe Loaded?")},
+//    {F("System Components"), F("Sample Loaded?")}
   };
 
   int numChecks = sizeof(checks) / sizeof(checks[0]);
@@ -257,7 +254,6 @@ void keypadNavigation(void)
 
   // Execute the movements
   motorMoveDistance(x_displacement, 'X');
-
   motorMoveDistance(y_displacement, 'Y');
 
   // Show completion message
@@ -315,10 +311,7 @@ int getAxisInput(char axis)
       return (int(input_value) - 48); // Convert ASCII to integer
     } else {
       // Invalid input handling
-      setupDisplay();
-      display.println(F("Invalid Input\n-Enter digit 0-9\n-Try again..."));
-      display.display();
-      waitForKeypadInput(); // Wait for acknowledgment
+      displayError();
     }
   }
 }
@@ -333,21 +326,23 @@ void joystickNavigation(void)
   display.println(F("Press W-BTN to exit"));
   display.display();
 
+  // Set up buffer
   char x_buffer[10];
   char y_buffer[10];
 
+  // displacement varibales 
   int x_dis = 0;
   int y_dis = 0;
   int last_x_dis = 0;
   int last_y_dis = 0;
+
   while (digitalRead(PAGE_BUTTON_PIN))
   {
-    int x_raw = analogRead(JOYSTICK_X);
-    int y_raw = analogRead(JOYSITCK_Y);
+    // Read and map input
+    int x_val = map(analogRead(JOYSTICK_X), 0, 1023, 0, 1);
+    int y_val = map(analogRead(JOYSITCK_Y), 0, 1023, 0, 1);
 
-    int x_val = map(x_raw, 0, 1023, 0, 1);
-    int y_val = map(y_raw, 0, 1023, 0, 1);
-
+    // Confirm the stage has room to move
     if (x_dis + x_val <= 8 && y_dis +y_val <= 8)
     {
       x_dis += x_val;
@@ -370,6 +365,7 @@ void joystickNavigation(void)
       break;
     }
 
+    // Update display based on current value of X and Y
     sprintf(x_buffer, "X (mm): %d", x_dis);
     sprintf(y_buffer, "Y (mm): %d", y_dis);
     display.fillRect(0, 16, 128, 16, SSD1306_BLACK);
@@ -384,6 +380,108 @@ void joystickNavigation(void)
   displayMovementComplete(x_dis, y_dis);
 }
 
+
+/**
+ * configure_scan_paramters - Configure scan parameters based on  quick
+ *                            or advanced scan
+ */
+bool configure_scan_parameters(void)
+{
+  String text = F(
+    "Configure Scan Parameters\n"
+    "-Press 1 for  quick scan, 2 for an advanced scan\n"
+  );
+  displayTextWithPagination(text);
+
+  switch (waitForKeypadInput())
+  {
+    case '1':
+      quickScan();
+      break;
+
+    case '2':
+      advancedScan();
+      break;
+
+    default:
+      return false;
+  }
+
+  return true;
+}
+
+
+/**
+ * quickScan - Scan area by setting number of images
+ *
+ * Return: true when done unless operation Cancelled
+ */
+bool quickScan(void)
+{
+  int noOfImages = getValidatedInput(F(
+    "Scan Parameters\n"
+    "-No of Images: \n"
+  ));
+  if (noOfImages == -1) return false; 
+
+
+  ScanConfig scan_config = setDefaultConfig();
+  ScanParameters scan_parameters = setDefaultParameters();
+  scan_parameters.no_of_images = noOfImages;
+
+  String summary = 
+    "Config summary\n"
+    "Head Mode: " + String(scan_config.head_mode) + "\n"
+    "Scan size: " + String(scan_parameters.scan_size) + "µm\n"
+    "Images: " + String(scan_parameters.no_of_images) + "\n"
+    ;
+  displayTextWithPagination(summary);
+  waitForKeypadInput();
+
+  return true;
+}
+
+int getValidatedInput(const __FlashStringHelper *query)
+{
+  while (true)
+  {
+    setupDisplay();
+    display.println(query);
+    display.display();
+
+    display.setCursor(0, 16);
+    char input = waitForKeypadInput();
+
+    // validate Input
+    if (input == '0')
+    {
+      display.println("Cancelled By User");
+      display.display();
+      delay(1500);
+      return -1;
+    }
+    else if (isdigit(input))
+    {
+      display.println(input);
+      display.display();
+      delay(1500);
+
+      return (int(input) - 48);
+    }
+    else
+    {
+      displayError();
+    }
+
+  }
+}
+
+/**
+ * advancedScan - Scan area by setting all parameters
+ */
+bool advancedScan(void)
+{
+}
 
 /**
 * waitForKeypadInput - Wait for keypad input and return the key

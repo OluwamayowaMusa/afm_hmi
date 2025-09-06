@@ -24,3 +24,14 @@ void displayMainMenu()
   display.println(F("Select option:"));
   display.display();
 }
+
+/**
+ * displayError - Display errorr
+*/
+void displayError(void)
+{
+  setupDisplay();
+  display.println(F("Invalid Input\n-Enter digit 0-9\n-Try again..."));
+  display.display();
+  waitForKeypadInput(); // Wait for acknowledgment
+}
