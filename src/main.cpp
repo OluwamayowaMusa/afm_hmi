@@ -13,14 +13,14 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 // Declaration for Keypad
 char keys[ROWS][COLS] = {
-  { '1', '2', '3', 'A' },
-  { '4', '5', '6', 'B' },
-  { '7', '8', '9', 'C' },
-  { '*', '0', '#', 'D' }
+  { '1', '2', '3' },
+  { '4', '5', '6' },
+  { '7', '8', '9' },
+  { '*', '0', '#' }
 };
 
 byte rowPins[ROWS] = { 11, 10, 9, 8 };  //connect to the row pinouts of the keypad
-byte colPins[COLS] = { 7, 6, 5, 4 };  //connect to the column pinouts of the keypad
+byte colPins[COLS] = { 7, 6, 5};  //connect to the column pinouts of the keypad
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
@@ -98,6 +98,8 @@ void loop() {
         break;
     }
   }
+
+  displayMainMenu();
 }
 
 
@@ -125,30 +127,23 @@ void take_an_afm_image(void)
   );
   displayTextWithPagination(text);
 
-  Serial.println(F("Waiting for keyboard input"));
   char key = waitForKeypadInput();
-
-  if (key)
+  switch (key)
   {
-    switch (key)
-    {
-      case '1':
-          Serial.println(F("Confirm all checks"));
-          if (confirm_all_checks())
-          {
-            Serial.println(F("All Checks performed, naviagting"));
-            navigate_to_scan_area();
-          }
-          else
-          {
-            display.println(F("Ensure checks pass"));
-            display.display();
-          }
-      default:
-          Serial.println(F("Going back to Main Menu"));
-          displayMainMenu();
-          break;
-    }
+    case '1':
+      if (confirm_all_checks())
+      {
+        if (navigate_to_scan_area()) {};
+      }
+      else
+      {
+        display.println(F("Ensure checks pass"));
+        display.display();
+        delay(2000);
+      }
+      break;
+    default:
+      break;
   }
 }
 
@@ -163,10 +158,10 @@ bool confirm_all_checks(void)
   // Array of check items - category, question pairs
   const __FlashStringHelper* checks[][2] = {
     {F("Cable Connections"), F("Cable well connected?")},
-//    {F("System Components"), F("Probe Head Installed?")},
-//    {F("System Components"), F("Scanner Installed?")},
-//    {F("System Components"), F("Probe Loaded?")},
-//    {F("System Components"), F("Sample Loaded?")}
+    {F("System Components"), F("Probe Head Installed?")},
+    {F("System Components"), F("Scanner Installed?")},
+    {F("System Components"), F("Probe Loaded?")},
+    {F("System Components"), F("Sample Loaded?")}
   };
 
   int numChecks = sizeof(checks) / sizeof(checks[0]);
@@ -223,17 +218,17 @@ bool performSingleCheck(
 
 /**
  * navigate_to_scan_area - Navigate to area on sample to scan
+ *
+ * Return: true if success else false
  */
-void navigate_to_scan_area(void)
+bool navigate_to_scan_area(void)
 {
-  Serial.println(F("In Navigation"));
   String text = F("Navigate scan Area\n"
                "-Use the keypad or joystick to navigate to interested area under sample.\n"
                "-Press 1 for keypad, 2 for joystick.\n"
   );
   displayTextWithPagination(text);
 
-  Serial.println(F("Waiting for keyboard input"));
   char key = waitForKeypadInput();
 
   switch (key) {
@@ -244,10 +239,11 @@ void navigate_to_scan_area(void)
       joystickNavigation();
       break;
     default:
-      Serial.println(F("Invalid selection"));
       // Could recursively call navigate_to_scan_area() or return to menu
+      return false;
       break;
   }
+  return true;
 }
 
 /**
@@ -260,12 +256,8 @@ void keypadNavigation(void)
   int y_displacement = getAxisInput('Y');
 
   // Execute the movements
-  Serial.print(F("Move X by "));
-  Serial.println(x_displacement);
   motorMoveDistance(x_displacement, 'X');
 
-  Serial.print(F("Move Y by "));
-  Serial.println(y_displacement);
   motorMoveDistance(y_displacement, 'Y');
 
   // Show completion message
@@ -280,11 +272,18 @@ void keypadNavigation(void)
  */
 void displayMovementComplete(int x_val, int y_val)
 {
-  String completion_text = "Movement Complete\n"
-                          "X: " + String(x_val) + "mm\n"
-                          "Y: " + String(y_val) + "mm\n"
-                          "Press any key...";
-  displayTextWithPagination(completion_text);
+  setupDisplay();
+
+  display.println(F("Movement Complete"));
+  display.print(F("X: "));
+  display.print(x_val);
+  display.println(F("mm"));
+  display.print(F("Y: "));
+  display.print(y_val);
+  display.println(F("mm"));
+  display.println(F("Press any key..."));
+
+  display.display();
   waitForKeypadInput();
 }
 
@@ -296,16 +295,19 @@ void displayMovementComplete(int x_val, int y_val)
  */
 int getAxisInput(char axis)
 {
-  String prompt_text = "Keypad Nav\n-Enter " + String(axis) + " (mm): ";
+  char prompt_text[28];
+  sprintf(prompt_text, "Keypad Nav\n-Enter %c  (mm):", axis);
 
   while (true) {
-    displayTextWithPagination(prompt_text);
+    setupDisplay();
+    display.println(prompt_text);
+    display.display();
+
     display.setCursor(0, 16);
     char input_value = waitForKeypadInput();
 
     // Validate input
     if (isdigit(input_value)) {
-      Serial.println(input_value);
       display.println(input_value);
       display.display();
       delay(1500); // Reduced delay
@@ -313,9 +315,9 @@ int getAxisInput(char axis)
       return (int(input_value) - 48); // Convert ASCII to integer
     } else {
       // Invalid input handling
-      Serial.println(F("Enter valid digit (0-9)"));
-      String error_text = "Invalid Input\n-Enter digit 0-9 for " + String(axis) + " axis\n-Try again...";
-      displayTextWithPagination(error_text);
+      setupDisplay();
+      display.println(F("Invalid Input\n-Enter digit 0-9\n-Try again..."));
+      display.display();
       waitForKeypadInput(); // Wait for acknowledgment
     }
   }
@@ -326,13 +328,11 @@ int getAxisInput(char axis)
 
 void joystickNavigation(void)
 {
-  Serial.println(F("In Joystick"));
   setupDisplay();
   display.println(F("Joystick Nav"));
   display.println(F("Press W-BTN to exit"));
   display.display();
 
-  
   char x_buffer[10];
   char y_buffer[10];
 
@@ -362,11 +362,10 @@ void joystickNavigation(void)
     }
     else
     {
-      String text = F(
-        "Joystick Nav\n"
-        "Maximum translation distance for X and Y Reached\n"
-      );
-      displayTextWithPagination(text);
+      setupDisplay();
+      display.println(F("Joystick Nav"));
+      display.println(F("Maximum translation for X or Y"));
+      display.display();
       waitForKeypadInput();
       break;
     }
@@ -378,6 +377,8 @@ void joystickNavigation(void)
     display.println(x_buffer);
     display.println(y_buffer);
     display.display();
+
+    delay(100); // Prevent excessive CPU Usage
   }
 
   displayMovementComplete(x_dis, y_dis);
@@ -404,7 +405,5 @@ char waitForKeypadInput() {
   // Only exit pagination mode after keypad input is received
   displayingText = false;
 
-  Serial.print(F("Key pressed: "));
-  Serial.println(key);
   return key;
 }

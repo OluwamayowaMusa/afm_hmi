@@ -39,7 +39,7 @@ extern bool buttonPressed;
 #define OLED_RESET -1
 #define SCREEN_ADDRESS 0x3C
 #define ROWS 4
-#define COLS 4
+#define COLS 3
 
 
 /**
@@ -60,7 +60,7 @@ struct MotorPins
 void show_manual(void);
 void take_an_afm_image(void);
 bool confirm_all_checks(void);
-void navigate_to_scan_area(void);
+bool navigate_to_scan_area(void);
 void keypadNavigation(void);
 int getAxisInput(char axis);
 void displayMovementComplete(int x_val, int y_val);

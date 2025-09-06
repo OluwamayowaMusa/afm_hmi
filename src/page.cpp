@@ -14,11 +14,6 @@ void handlePagination(void) {
     // Go to next page (wrap around to first page if at end)
     currentPage = (currentPage + 1) % totalPages;
     displayCurrentPage();
-
-    Serial.print("Page: ");
-    Serial.print(currentPage + 1);
-    Serial.print(" of ");
-    Serial.println(totalPages);
   }
 
   // Reset button state when released
@@ -120,10 +115,6 @@ void splitTextIntoPages(String text) {
     pages[totalPages] = page;
     totalPages++;
   }
-
-  Serial.print("Created ");
-  Serial.print(totalPages);
-  Serial.println(" pages");
 }
 
 /**

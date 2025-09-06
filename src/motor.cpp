@@ -1,5 +1,3 @@
-#include "Arduino.h"
-#include "USBAPI.h"
 #include "afm_hmi.h"
 
 
@@ -10,10 +8,12 @@
  */
 void motorMoveDistance(int distance, char motor)
 {
+  Serial.println("Moving Motor");
   // Power motor
   digitalWrite(ENABLE_PIN, LOW);
-
   digitalWrite(SLEEP_PIN, HIGH);
+
+
   // Select appropriate pins based on motor
   MotorPins pins;
   switch (motor) {
@@ -31,17 +31,8 @@ void motorMoveDistance(int distance, char motor)
   // Set direction based on distance sign
   digitalWrite(pins.dirPin, (distance > 0) ? HIGH : LOW);
 
-  Serial.println(F("Moving distance: "));
-  Serial.println(distance);
-  Serial.println(motor);
-
   // Calculate and execute steps
   int steps = STEPS_PER_DISTANCE * abs(distance);
-
-  Serial.print(F("Executing "));
-  Serial.print(steps);
-  Serial.print(F(" steps for motor "));
-  Serial.println(motor);
 
   for (int i = 0; i < steps; i++) {
     digitalWrite(pins.stepPin, HIGH);
