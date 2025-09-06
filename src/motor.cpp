@@ -41,7 +41,6 @@ void motorMoveDistance(int distance, char motor)
 
   delay(100); // Brief pause after movement
 
-
   // Power off Motors
   digitalWrite(ENABLE_PIN, HIGH);
   digitalWrite(SLEEP_PIN, LOW);

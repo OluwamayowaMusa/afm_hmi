@@ -42,3 +42,11 @@ ScanParameters setDefaultParameters(void)
 
   return scan_parameters;
 }
+
+/**
+ * take_scan - Start taking the scan
+*/
+bool take_scan(void)
+{
+  return false;
+}

@@ -10,6 +10,7 @@
 
 /* Global Varibles */
 extern Adafruit_SSD1306 display;
+extern Keypad keypad;
 extern String pages[5];
 extern int totalPages;
 extern int currentPage;
@@ -116,6 +117,7 @@ bool advancedScan(void);
 ScanConfig setDefaultConfig(void);
 ScanParameters setDefaultParameters(void);
 int getValidatedInput(const __FlashStringHelper *query);
+bool take_scan(void);
 void keypadNavigation(void);
 int getAxisInput(char axis);
 void displayMovementComplete(int x_val, int y_val);
@@ -124,6 +126,7 @@ void motorMoveDistance(int distance, char motor);
 void displayMainMenu(void);
 void setupDisplay(void);
 void displayError(void);
+void displayCustomizedError(const __FlashStringHelper *message);
 bool performSingleCheck(
 	const __FlashStringHelper *category,
 	const __FlashStringHelper *question);
