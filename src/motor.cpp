@@ -1,43 +1,59 @@
 #include "Arduino.h"
+#include "USBAPI.h"
 #include "afm_hmi.h"
 
 
 /**
  * motorMoveDistance - Rotate motor such that angular displacement translates to distance
- *
- * @distance: linear displacement
- * @motor: X or Y motor
- *
-*/
+ * @distance: linear displacement (can be positive or negative)
+ * @motor: 'X' or 'Y' motor identifier
+ */
 void motorMoveDistance(int distance, char motor)
 {
-  int stepPin, dirPin;
+  // Power motor
+  digitalWrite(ENABLE_PIN, LOW);
 
-  if (motor == 'X')
-  {
-    stepPin = STEP_PIN_X;
-    dirPin = DIR_PIN_X;
+  digitalWrite(SLEEP_PIN, HIGH);
+  // Select appropriate pins based on motor
+  MotorPins pins;
+  switch (motor) {
+    case 'X':
+      pins = {STEP_PIN_X, DIR_PIN_X};
+      break;
+    case 'Y':
+      pins = {STEP_PIN_Y, DIR_PIN_Y};
+      break;
+    default:
+      Serial.println(F("Invalid motor specified"));
+      return;
   }
-  else
-  {
-    stepPin = STEP_PIN_Y;
-    dirPin = DIR_PIN_Y;
-  }
 
-  if (distance > 0)
-    digitalWrite(dirPin, HIGH);
-  else
-    digitalWrite(dirPin, LOW);
+  // Set direction based on distance sign
+  digitalWrite(pins.dirPin, (distance > 0) ? HIGH : LOW);
 
-  int steps = STEPS_PER_DISTANCE * abs(distance); 
+  Serial.println(F("Moving distance: "));
+  Serial.println(distance);
+  Serial.println(motor);
 
-  for (int x = 0; x < steps; x++)
-  {
-    digitalWrite(stepPin, HIGH);
+  // Calculate and execute steps
+  int steps = STEPS_PER_DISTANCE * abs(distance);
+
+  Serial.print(F("Executing "));
+  Serial.print(steps);
+  Serial.print(F(" steps for motor "));
+  Serial.println(motor);
+
+  for (int i = 0; i < steps; i++) {
+    digitalWrite(pins.stepPin, HIGH);
     delayMicroseconds(STEP_DELAY);
-    digitalWrite(stepPin, LOW);
+    digitalWrite(pins.stepPin, LOW);
     delayMicroseconds(STEP_DELAY);
   }
 
-  delay(100);
+  delay(100); // Brief pause after movement
+
+
+  // Power off Motors
+  digitalWrite(ENABLE_PIN, HIGH);
+  digitalWrite(SLEEP_PIN, LOW);
 }

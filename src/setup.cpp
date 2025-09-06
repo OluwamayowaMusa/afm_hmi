@@ -24,16 +24,3 @@ void displayMainMenu()
   display.println(F("Select option:"));
   display.display();
 }
-
-
-/**
- * isdigit - check if a character is digit
-*/
-
-bool _isdigit(char c)
-{
-  if (c >= '0' && c <= '9')
-    return true;
-
-  return false;
-}

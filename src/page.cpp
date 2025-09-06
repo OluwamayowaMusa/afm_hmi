@@ -42,10 +42,10 @@ void displayCurrentPage(void)
 
   // Display navigation info at bottom
   display.setCursor(0, SCREEN_HEIGHT - 8);
-  display.print("Btn:Next ");
+  display.print(F("Btn:Next "));
   display.setCursor(SCREEN_WIDTH - 30, SCREEN_HEIGHT - 8);
   display.print(currentPage + 1);
-  display.print("/");
+  display.print(F("/"));
   display.print(totalPages);
 
   display.display();
