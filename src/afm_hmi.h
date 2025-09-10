@@ -17,6 +17,7 @@ extern int currentPage;
 extern bool displayingText;
 extern unsigned long lastButtonPress;
 extern bool buttonPressed;
+extern float gain_paramter;
 
 /* Global Macros */
 #define DEBOUNCE_DELAY 50
@@ -41,6 +42,8 @@ extern bool buttonPressed;
 #define SCREEN_ADDRESS 0x3C
 #define ROWS 4
 #define COLS 3
+
+#define SCAN_TIME 120000
 
 
 /**

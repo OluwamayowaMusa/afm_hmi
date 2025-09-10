@@ -54,7 +54,14 @@ void take_an_afm_image(void)
 
       if (!status) return;
 
-      take_scan();
+      if (take_scan())
+      {
+          setupDisplay();
+          display.println(F("Scan all done"));
+          display.println(F("Press any key to continue"));
+          display.display();
+          waitForKeypadInput();
+      }
     }
     default:
       break;

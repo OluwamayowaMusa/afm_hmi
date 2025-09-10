@@ -27,6 +27,9 @@ int totalPages = 0;
 int currentPage = 0;
 bool displayingText = false; // Flag to track if we're in text display mode
 
+// Scan Parameters
+float gain_paramter = 0.0;
+
 // Button debouncing variables
 unsigned long lastButtonPress = 0;
 bool buttonPressed = false;

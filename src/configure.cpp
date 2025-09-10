@@ -44,14 +44,17 @@ bool quickScan(void)
   ScanConfig scan_config = setDefaultConfig();
   ScanParameters scan_parameters = setDefaultParameters();
   scan_parameters.no_of_images = noOfImages;
+  
+  // Update gain Parameter
+  gain_paramter = scan_parameters.gain;
 
   String summary = 
     "Config summary\n"
-    "Head Mode: " + String(scan_config.head_mode) + "\n"
-    "Scan size: " + String(scan_parameters.scan_size) + "µm\n"
-    "Scan rate:" + String(scan_parameters.scan_rate) + "Hz\n"
-    "Data Points: " + String(scan_parameters.no_data_points) + "\n"
-    "Images: " + String(scan_parameters.no_of_images) + "\n"
+//    "Head Mode: " + String(scan_config.head_mode) + "\n"
+//    "Scan size: " + String(scan_parameters.scan_size) + "µm\n"
+//    "Scan rate:" + String(scan_parameters.scan_rate) + "Hz\n"
+//    "Data Points: " + String(scan_parameters.no_data_points) + "\n"
+//    "Images: " + String(scan_parameters.no_of_images) + "\n"
     "Press any key to continue\n"
     ;
   displayTextWithPagination(summary);

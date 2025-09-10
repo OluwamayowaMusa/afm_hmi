@@ -10,10 +10,10 @@ bool confirm_all_checks(void)
   // Array of check items - category, question pairs
   const __FlashStringHelper* checks[][2] = {
     {F("Cable Connections"), F("Cable well connected?")},
-//    {F("System Components"), F("Probe Head Installed?")},
-//    {F("System Components"), F("Scanner Installed?")},
-//    {F("System Components"), F("Probe Loaded?")},
-//    {F("System Components"), F("Sample Loaded?")}
+    {F("System Components"), F("Probe Head Installed?")},
+    {F("System Components"), F("Scanner Installed?")},
+    {F("System Components"), F("Probe Loaded?")},
+    {F("System Components"), F("Sample Loaded?")}
   };
 
   int numChecks = sizeof(checks) / sizeof(checks[0]);

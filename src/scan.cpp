@@ -48,5 +48,24 @@ ScanParameters setDefaultParameters(void)
 */
 bool take_scan(void)
 {
-  return false;
+  setupDisplay();
+  display.println("Taking Scan");
+  display.println("Updating Gain parameter based on oscillations");
+  display.display();
+  
+  unsigned long current_time = millis();
+
+  char buffer[20];
+  while (millis() - current_time <= SCAN_TIME) 
+  {
+    sprintf(buffer, "Gain: %d", 3);
+    display.fillRect(0, 24, 128, 16, SSD1306_BLACK);
+    display.setCursor(0, 24);
+    display.println(buffer);
+    display.display();
+
+    delay(100);
+  }
+
+  return true;
 }
